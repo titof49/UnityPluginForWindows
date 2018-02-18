@@ -1,0 +1,10 @@
+﻿  stdafx.cpp
+  Plugins.cpp
+c:\users\christophe\desktop\unity-technologies-windowsstoreappssamples\nativeplugins\source\plugins\common\plugins.cpp(17): warning C4005: 'TO_SEARCH_DEVICE_UUID' : redéfinition de macro
+  c:\users\christophe\desktop\unity-technologies-windowsstoreappssamples\nativeplugins\source\plugins\desktopplugins\stdafx.h(24): note: voir la définition précédente de 'TO_SEARCH_DEVICE_UUID'
+c:\users\christophe\desktop\unity-technologies-windowsstoreappssamples\nativeplugins\source\plugins\common\plugins.cpp(415): warning C4018: '<' : incompatibilité signed/unsigned
+  dllmain.cpp
+     Création de la bibliothèque C:\Users\Christophe\Desktop\Unity-Technologies-windowsstoreappssamples\NativePlugins\Source\Plugins\Debug\Plugins.lib et de l'objet C:\Users\Christophe\Desktop\Unity-Technologies-windowsstoreappssamples\NativePlugins\Source\Plugins\Debug\Plugins.exp
+  DesktopPlugins.vcxproj -> C:\Users\Christophe\Desktop\Unity-Technologies-windowsstoreappssamples\NativePlugins\Source\Plugins\Debug\Plugins.dll
+  Un sous-répertoire ou un fichier C:\Users\Christophe\Desktop\Unity-Technologies-windowsstoreappssamples\NativePlugins\Source\Plugins\..\..\Assets\Plugins existe déjà.
+          1 fichier(s) copié(s).

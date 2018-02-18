@@ -1,0 +1,8 @@
+﻿  stdafx.cpp
+  Plugins-Desktop.cpp
+c:\users\christophe\desktop\unity-technologies-windowsstoreappssamples\nativeplugins\source\plugins\common\plugins-desktop.cpp(544): warning C4018: '<' : incompatibilité signed/unsigned
+  dllmain.cpp
+     Création de la bibliothèque C:\Users\Christophe\Desktop\Unity-Technologies-windowsstoreappssamples\NativePlugins\Source\Plugins\x64\Debug\Plugins.lib et de l'objet C:\Users\Christophe\Desktop\Unity-Technologies-windowsstoreappssamples\NativePlugins\Source\Plugins\x64\Debug\Plugins.exp
+  DesktopPlugins.vcxproj -> C:\Users\Christophe\Desktop\Unity-Technologies-windowsstoreappssamples\NativePlugins\Source\Plugins\x64\Debug\Plugins.dll
+  Un sous-répertoire ou un fichier C:\Users\Christophe\Desktop\Unity-Technologies-windowsstoreappssamples\NativePlugins\Source\Plugins\..\..\Assets\Plugins existe déjà.
+          1 fichier(s) copié(s).
