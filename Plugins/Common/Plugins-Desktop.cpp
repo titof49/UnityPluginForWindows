@@ -27,47 +27,63 @@
 //
 #define TO_SEARCH_MOTENV_CHARACTERISTIC_MOTENV	"{00000100-0001-11E1-AC36-0002A5D5C51B}"
 
+const int MAX_DEVICE_THINGY     =50;
+const int MAX_DEVICE_WESU       =50;
+const int MAX_DEVICE_MOTENV     =50;
 
-ULONGLONG TickCount64Thingy = 0;
-ULONGLONG TickCount64Wesu   = 0;
-ULONGLONG TickCount64MotEnv = 0;
+
+
+
+ULONGLONG TickCount64Thingy[MAX_DEVICE_THINGY];
+ULONGLONG TickCount64Wesu[MAX_DEVICE_WESU];
+ULONGLONG TickCount64MotEnv[MAX_DEVICE_MOTENV];
 
 //Step 1: find the BLE device handle from its GUID
 GUID AGuidThingy;
 GUID AGuidWesu;
 GUID AGuidMotEnv;
 
+HANDLE                      hLEDeviceThingy[MAX_DEVICE_THINGY];
+BLUETOOTH_GATT_EVENT_HANDLE EventHandleThingy[MAX_DEVICE_THINGY];
+int                         CallBackValueThingy[MAX_DEVICE_THINGY];
 
 
+HANDLE                      hLEDeviceWesu[MAX_DEVICE_WESU];
+BLUETOOTH_GATT_EVENT_HANDLE EventHandleWesu[MAX_DEVICE_WESU];
+int                         CallBackValueWesu[MAX_DEVICE_WESU];
 
 
+HANDLE                      hLEDeviceMotEnv[MAX_DEVICE_MOTENV];
+BLUETOOTH_GATT_EVENT_HANDLE EventHandleMotEnv[MAX_DEVICE_MOTENV];
+int                         CallBackValueEnv[MAX_DEVICE_MOTENV];
 
-HANDLE hLEDeviceThingy=NULL;
-BLUETOOTH_GATT_EVENT_HANDLE EventHandleThingy=NULL;
-
-HANDLE hLEDeviceWesu = NULL;
-BLUETOOTH_GATT_EVENT_HANDLE EventHandleWesu = NULL;
-
-HANDLE hLEDeviceMotEnv = NULL;
-BLUETOOTH_GATT_EVENT_HANDLE EventHandleMotEnv = NULL;
 
 // Thingy  
-float QwThingy=0, QxThingy=0, QyThingy=0, QzThingy=0;
+float                       QwThingy[MAX_DEVICE_THINGY],
+                            QxThingy[MAX_DEVICE_THINGY],
+                            QyThingy[MAX_DEVICE_THINGY],
+                            QzThingy[MAX_DEVICE_THINGY];
 // Wesu
-float QwWesu= 0, QxWesu = 0, QyWesu = 0, QzWesu = 0;
+float                       QwWesu[MAX_DEVICE_WESU],
+                            QxWesu[MAX_DEVICE_WESU],
+                            QyWesu[MAX_DEVICE_WESU],
+                            QzWesu[MAX_DEVICE_WESU];
 // MOTENV
-float QwMotEnv = 0, QxMotEnv = 0, QyMotEnv = 0, QzMotEnv = 0;
+float                       QwMotEnv[MAX_DEVICE_MOTENV],
+                            QxMotEnv[MAX_DEVICE_MOTENV],
+                            QyMotEnv[MAX_DEVICE_MOTENV],
+                            QzMotEnv[MAX_DEVICE_MOTENV];
 
 
 //
-void OpenBluetoothThingy();
-void CloseBluetoothThingy();
+void OpenBluetoothThingy(int Index);
+void CloseBluetoothThingy(int Index);
 //
-void OpenBluetoothWesu();
-void CloseBluetoothWesu();
+void OpenBluetoothWesu(int Index);
+void CloseBluetoothWesu(int Index);
 //
-void OpenBluetoothMotEnv();
-void CloseBluetoothMotEnv();
+void OpenBluetoothMotEnv(int Index);
+void CloseBluetoothMotEnv(int Index);
 //
 float getQs(float qi, float qj, float qk);
 
@@ -131,19 +147,19 @@ void CALLBACK SomethingHappenedThingy(BTH_LE_GATT_EVENT_TYPE EventType, PVOID Ev
             ((QzB[0] << 0) & 0x000000ff);
 
         // reduction en flottant
-        QwThingy = (float)(iQwB) / SCALE_FACTOR;
-        QxThingy = (float)(iQxB) / SCALE_FACTOR;
-        QyThingy = (float)(iQyB) / SCALE_FACTOR;
-        QzThingy = (float)(iQzB) / SCALE_FACTOR;
+        QwThingy[*((PINT)Context)] = (float)(iQwB) / SCALE_FACTOR;
+        QxThingy[*((PINT)Context)] = (float)(iQxB) / SCALE_FACTOR;
+        QyThingy[*((PINT)Context)] = (float)(iQyB) / SCALE_FACTOR;
+        QzThingy[*((PINT)Context)] = (float)(iQzB) / SCALE_FACTOR;
         //
         printf("%X,%X,%X,%X\n", iQwB, iQxB, iQyB, iQzB);
         printf("%f,%f,%f,%f\n", QwThingy, QxThingy, QyThingy, QzThingy);
         //
         ULONGLONG NewTickCount64 = GetTickCount64();
         //
-        printf("%I64u,%I64u\n,", NewTickCount64 - TickCount64Thingy, NewTickCount64);
+        printf("%I64u,%I64u\n,", NewTickCount64 - TickCount64Thingy[*((PINT)Context)], NewTickCount64);
         //
-        TickCount64Thingy = NewTickCount64;
+        TickCount64Thingy[*((PINT)Context)] = NewTickCount64;
     }
 }
 
@@ -169,37 +185,37 @@ void CALLBACK SomethingHappenedWesu(BTH_LE_GATT_EVENT_TYPE EventType, PVOID Even
         QiB[2] = ValueChangedEventParameters->CharacteristicValue->Data[4];
         QiB[3] = ValueChangedEventParameters->CharacteristicValue->Data[5];
 
-        memcpy(&QxWesu, &QiB, sizeof QxWesu);
+        memcpy(&QxWesu[*((PINT)Context)], &QiB, sizeof QxWesu);
 
         QjB[0] = ValueChangedEventParameters->CharacteristicValue->Data[6];
         QjB[1] = ValueChangedEventParameters->CharacteristicValue->Data[7];
         QjB[2] = ValueChangedEventParameters->CharacteristicValue->Data[8];
         QjB[3] = ValueChangedEventParameters->CharacteristicValue->Data[9];
 
-        memcpy(&QyWesu, &QjB, sizeof QyWesu);
+        memcpy(&QyWesu[*((PINT)Context)], &QjB, sizeof QyWesu);
 
         QkB[0] = ValueChangedEventParameters->CharacteristicValue->Data[10];
         QkB[1] = ValueChangedEventParameters->CharacteristicValue->Data[11];
         QkB[2] = ValueChangedEventParameters->CharacteristicValue->Data[12];
         QkB[3] = ValueChangedEventParameters->CharacteristicValue->Data[13];
  
-        memcpy(&QzWesu, &QkB, sizeof QzWesu);
+        memcpy(&QzWesu[*((PINT)Context)], &QkB, sizeof QzWesu);
         
         QsB[0] = ValueChangedEventParameters->CharacteristicValue->Data[14];
         QsB[1] = ValueChangedEventParameters->CharacteristicValue->Data[15];
         QsB[2] = ValueChangedEventParameters->CharacteristicValue->Data[16];
         QsB[3] = ValueChangedEventParameters->CharacteristicValue->Data[17];
 
-        memcpy(&QwWesu, &QsB, sizeof QwWesu);
+        memcpy(&QwWesu[*((PINT)Context)], &QsB, sizeof QwWesu);
 
         //
-        printf("%f,%f,%f,%f\n", QxWesu, QyWesu, QzWesu, QwWesu);
+        printf("%f,%f,%f,%f\n", QxWesu[*((PINT)Context)], QyWesu[*((PINT)Context)], QzWesu[*((PINT)Context)], QwWesu[*((PINT)Context)]);
         //
         ULONGLONG NewTickCount64 = GetTickCount64();
         //
-        printf("%I64u,%I64u\n,", NewTickCount64 - TickCount64Wesu, NewTickCount64);
+        printf("%I64u,%I64u\n,", NewTickCount64 - TickCount64Wesu[*((PINT)Context)], NewTickCount64);
         //
-        TickCount64Wesu = NewTickCount64;
+        TickCount64Wesu[*((PINT)Context)] = NewTickCount64;
     }
 }
 
@@ -238,10 +254,10 @@ void CALLBACK SomethingHappenedMotEnv(BTH_LE_GATT_EVENT_TYPE EventType, PVOID Ev
         QkB[1] = ValueChangedEventParameters->CharacteristicValue->Data[7];
         memcpy(&iQzB, &QkB, sizeof iQzB);
 
-        QxMotEnv = (float)(iQxB) / SCALE_FACTOR;
-        QyMotEnv = (float)(iQyB) / SCALE_FACTOR;
-        QzMotEnv = (float)(iQzB) / SCALE_FACTOR;
-        QwMotEnv = getQs(QxMotEnv, QyMotEnv, QzMotEnv);
+        QxMotEnv[*((PINT)Context)] = (float)(iQxB) / SCALE_FACTOR;
+        QyMotEnv[*((PINT)Context)] = (float)(iQyB) / SCALE_FACTOR;
+        QzMotEnv[*((PINT)Context)] = (float)(iQzB) / SCALE_FACTOR;
+        QwMotEnv[*((PINT)Context)] = getQs(QxMotEnv[*((PINT)Context)], QyMotEnv[*((PINT)Context)], QzMotEnv[*((PINT)Context)]);
 
 
         //
@@ -249,9 +265,9 @@ void CALLBACK SomethingHappenedMotEnv(BTH_LE_GATT_EVENT_TYPE EventType, PVOID Ev
         //
         ULONGLONG NewTickCount64 = GetTickCount64();
         //
-        printf("%I64u,%I64u\n,", NewTickCount64 - TickCount64Wesu, NewTickCount64);
+        printf("%I64u,%I64u\n,", NewTickCount64 - TickCount64Wesu[*((PINT)Context)], NewTickCount64);
         //
-        TickCount64Wesu = NewTickCount64;
+        TickCount64Wesu[*((PINT)Context)] = NewTickCount64;
      }
 }
 
@@ -315,6 +331,63 @@ float getQs(float qi, float qj, float qk)
 
 }
 
+
+HANDLE GetBLEHandleOffset(__in GUID AGuid, __in int Index)
+{
+    HDEVINFO hDI;
+    SP_DEVICE_INTERFACE_DATA did;
+    SP_DEVINFO_DATA dd;
+    GUID BluetoothInterfaceGUID = AGuid;
+    HANDLE hComm = NULL;
+
+    hDI = SetupDiGetClassDevs(&BluetoothInterfaceGUID, NULL, NULL, DIGCF_DEVICEINTERFACE | DIGCF_PRESENT);
+
+    if (hDI == INVALID_HANDLE_VALUE) return NULL;
+
+    did.cbSize = sizeof(SP_DEVICE_INTERFACE_DATA);
+    dd.cbSize = sizeof(SP_DEVINFO_DATA);
+
+    for (DWORD i = Index; SetupDiEnumDeviceInterfaces(hDI, NULL, &BluetoothInterfaceGUID, i, &did); i++)
+    {
+        SP_DEVICE_INTERFACE_DETAIL_DATA DeviceInterfaceDetailData;
+
+        DeviceInterfaceDetailData.cbSize = sizeof(SP_DEVICE_INTERFACE_DETAIL_DATA);
+
+        DWORD size = 0;
+
+        if (!SetupDiGetDeviceInterfaceDetail(hDI, &did, NULL, 0, &size, 0))
+        {
+            int err = GetLastError();
+
+            if (err == ERROR_NO_MORE_ITEMS) break;
+
+            PSP_DEVICE_INTERFACE_DETAIL_DATA pInterfaceDetailData = (PSP_DEVICE_INTERFACE_DETAIL_DATA)GlobalAlloc(GPTR, size);
+
+            pInterfaceDetailData->cbSize = sizeof(SP_DEVICE_INTERFACE_DETAIL_DATA);
+
+            if (!SetupDiGetDeviceInterfaceDetail(hDI, &did, pInterfaceDetailData, size, &size, &dd))
+                break;
+
+            hComm = CreateFile(
+                pInterfaceDetailData->DevicePath,
+                GENERIC_WRITE | GENERIC_READ,
+                FILE_SHARE_READ | FILE_SHARE_WRITE,
+                NULL,
+                OPEN_EXISTING,
+                FILE_FLAG_OVERLAPPED,
+                NULL);
+
+            GlobalFree(pInterfaceDetailData);
+        }
+    }
+
+    SetupDiDestroyDeviceInfoList(hDI);
+    return hComm;
+}
+
+
+
+/*
 //this function works to get a handle for a BLE device based on its GUID
 //copied from http://social.msdn.microsoft.com/Forums/windowshardware/en-US/e5e1058d-5a64-4e60-b8e2-0ce327c13058/erroraccessdenied-error-when-trying-to-receive-data-from-bluetooth-low-energy-devices?forum=wdk
 //credits to Andrey_sh
@@ -370,137 +443,137 @@ HANDLE GetBLEHandle(__in GUID AGuid)
     SetupDiDestroyDeviceInfoList(hDI);
     return hComm;
 }
+*/
 
-extern "C" float __declspec(dllexport) _stdcall GetFloatWThingy()
+extern "C" float __declspec(dllexport) _stdcall GetFloatWThingy(int Index)
 {
-    return QwThingy;
+    return QwThingy[Index];
 }
 
-extern "C" float __declspec(dllexport) _stdcall GetFloatXThingy()
+extern "C" float __declspec(dllexport) _stdcall GetFloatXThingy(int Index)
 {
-	return QxThingy;
+	return QxThingy[Index];
 }
 
-extern "C" float __declspec(dllexport) _stdcall GetFloatYThingy()
+extern "C" float __declspec(dllexport) _stdcall GetFloatYThingy(int Index)
 {
-    return QyThingy;
+    return QyThingy[Index];
 }
 
-extern "C" float __declspec(dllexport) _stdcall GetFloatZThingy()
+extern "C" float __declspec(dllexport) _stdcall GetFloatZThingy(int Index)
 {
-    return QzThingy;
-}
-
-
-
-
-extern "C" float __declspec(dllexport) _stdcall GetFloatWWesu()
-{
-    return QwWesu;
-}
-
-extern "C" float __declspec(dllexport) _stdcall GetFloatXWesu()
-{
-    return QxWesu;
-}
-
-extern "C" float __declspec(dllexport) _stdcall GetFloatYWesu()
-{
-    return QyWesu;
-}
-
-extern "C" float __declspec(dllexport) _stdcall GetFloatZWesu()
-{
-    return QzWesu;
-}
-
-extern "C" float __declspec(dllexport) _stdcall GetFloatXMotEnv()
-{
-    return QxMotEnv;
-}
-
-extern "C" float __declspec(dllexport) _stdcall GetFloatYMotEnv()
-{
-    return QyMotEnv;
-}
-
-extern "C" float __declspec(dllexport) _stdcall GetFloatZMotEnv()
-{
-    return QzMotEnv;
-}
-
-extern "C" float __declspec(dllexport) _stdcall GetFloatWMotEnv()
-{
-    return QwMotEnv;
+    return QzThingy[Index];
 }
 
 
-extern "C" void __declspec(dllexport) _stdcall OpenBleThingy()
+
+
+extern "C" float __declspec(dllexport) _stdcall GetFloatWWesu(int Index)
 {
-    // Ouverture de la connexion
-    OpenBluetoothThingy();
+    return QwWesu[Index];
 }
 
-extern "C" void __declspec(dllexport) _stdcall CloseBleThingy()
+extern "C" float __declspec(dllexport) _stdcall GetFloatXWesu(int Index)
 {
-    // Fermeture de la connexion
-    CloseBluetoothThingy();
+    return QxWesu[Index];
 }
 
-extern "C" void __declspec(dllexport) _stdcall OpenBleWesu()
+extern "C" float __declspec(dllexport) _stdcall GetFloatYWesu(int Index)
+{
+    return QyWesu[Index];
+}
+
+extern "C" float __declspec(dllexport) _stdcall GetFloatZWesu(int Index)
+{
+    return QzWesu[Index];
+}
+
+extern "C" float __declspec(dllexport) _stdcall GetFloatXMotEnv(int Index)
+{
+    return QxMotEnv[Index];
+}
+
+extern "C" float __declspec(dllexport) _stdcall GetFloatYMotEnv(int Index)
+{
+    return QyMotEnv[Index];
+}
+
+extern "C" float __declspec(dllexport) _stdcall GetFloatZMotEnv(int Index)
+{
+    return QzMotEnv[Index];
+}
+
+extern "C" float __declspec(dllexport) _stdcall GetFloatWMotEnv(int Index)
+{
+    return QwMotEnv[Index];
+}
+
+
+extern "C" void __declspec(dllexport) _stdcall OpenBleThingy(int Index)
 {
     // Ouverture de la connexion
-    OpenBluetoothWesu();
+    OpenBluetoothThingy(Index);
 }
 
-extern "C" void __declspec(dllexport) _stdcall CloseBleWesu()
+extern "C" void __declspec(dllexport) _stdcall CloseBleThingy(int Index)
 {
     // Fermeture de la connexion
-    CloseBluetoothWesu();
+    CloseBluetoothThingy(Index);
 }
 
-extern "C" void __declspec(dllexport) _stdcall OpenBleMotEnv()
+extern "C" void __declspec(dllexport) _stdcall OpenBleWesu(int Index)
 {
     // Ouverture de la connexion
-    OpenBluetoothMotEnv();
+    OpenBluetoothWesu(Index);
 }
 
-extern "C" void __declspec(dllexport) _stdcall CloseBleMotEnv()
+extern "C" void __declspec(dllexport) _stdcall CloseBleWesu(int Index)
 {
     // Fermeture de la connexion
-    CloseBluetoothMotEnv();
+    CloseBluetoothWesu(Index);
 }
 
+extern "C" void __declspec(dllexport) _stdcall OpenBleMotEnv(int Index)
+{
+    // Ouverture de la connexion
+    OpenBluetoothMotEnv(Index);
+}
+
+extern "C" void __declspec(dllexport) _stdcall CloseBleMotEnv(int Index)
+{
+    // Fermeture de la connexion
+    CloseBluetoothMotEnv(Index);
+}
 
 //
-void CloseBluetoothThingy()
+void CloseBluetoothThingy(int Index)
 {
-    BluetoothGATTUnregisterEvent(EventHandleThingy, BLUETOOTH_GATT_FLAG_NONE);
-    CloseHandle(hLEDeviceThingy);
+    BluetoothGATTUnregisterEvent(EventHandleThingy[Index], BLUETOOTH_GATT_FLAG_NONE);
+    CloseHandle(hLEDeviceThingy[Index]);
 }
 
-void CloseBluetoothWesu()
+void CloseBluetoothWesu(int Index)
 {
-    BluetoothGATTUnregisterEvent(EventHandleWesu, BLUETOOTH_GATT_FLAG_NONE);
-    CloseHandle(hLEDeviceWesu);
+    BluetoothGATTUnregisterEvent(EventHandleWesu[Index], BLUETOOTH_GATT_FLAG_NONE);
+    CloseHandle(hLEDeviceWesu[Index]);
 }
 
-void CloseBluetoothMotEnv()
+void CloseBluetoothMotEnv(int Index)
 {
-    BluetoothGATTUnregisterEvent(EventHandleMotEnv, BLUETOOTH_GATT_FLAG_NONE);
-    CloseHandle(hLEDeviceMotEnv);
+    BluetoothGATTUnregisterEvent(EventHandleMotEnv[Index], BLUETOOTH_GATT_FLAG_NONE);
+    CloseHandle(hLEDeviceMotEnv[Index]);
 }
 
-void OpenBluetoothThingy()
+void OpenBluetoothThingy(int Index)
 {
     //GUID can be constructed from "{xxx....}" string using CLSID
     CLSIDFromString(TEXT(TO_SEARCH_DEVICE_UUID), &AGuidThingy);
 
     //now get the handle 
-    hLEDeviceThingy = GetBLEHandle(AGuidThingy);
+    hLEDeviceThingy[Index] = GetBLEHandleOffset(AGuidThingy, Index);
 
     //
-    TickCount64Thingy = GetTickCount64();
+    TickCount64Thingy[Index] = GetTickCount64();
 
     //Step 2: Get a list of services that the device advertises
     // first send 0,NULL as the parameters to BluetoothGATTServices inorder to get the number of
@@ -511,7 +584,7 @@ void OpenBluetoothThingy()
     ////////////////////////////////////////////////////////////////////////////
 
     HRESULT hr = BluetoothGATTGetServices(
-        hLEDeviceThingy,
+        hLEDeviceThingy[Index],
         0,
         NULL,
         &serviceBufferCount,
@@ -538,7 +611,7 @@ void OpenBluetoothThingy()
 
     USHORT numServices;
     hr = BluetoothGATTGetServices(
-        hLEDeviceThingy,
+        hLEDeviceThingy[Index],
         serviceBufferCount,
         pServiceBuffer,
         &numServices,
@@ -556,7 +629,7 @@ void OpenBluetoothThingy()
 
     USHORT charBufferSize;
     hr = BluetoothGATTGetCharacteristics(
-        hLEDeviceThingy,
+        hLEDeviceThingy[Index],
         pServiceBuffer,
         0,
         NULL,
@@ -585,7 +658,7 @@ void OpenBluetoothThingy()
         ////////////////////////////////////////////////////////////////////////////
         USHORT numChars;
         hr = BluetoothGATTGetCharacteristics(
-            hLEDeviceThingy,
+            hLEDeviceThingy[Index],
             pServiceBuffer,
             charBufferSize,
             pCharBuffer,
@@ -619,7 +692,7 @@ void OpenBluetoothThingy()
         ////////////////////////////////////////////////////////////////////////////
         USHORT descriptorBufferSize;
         hr = BluetoothGATTGetDescriptors(
-            hLEDeviceThingy,
+            hLEDeviceThingy[Index],
             currGattChar,
             0,
             NULL,
@@ -649,7 +722,7 @@ void OpenBluetoothThingy()
 
             USHORT numDescriptors;
             hr = BluetoothGATTGetDescriptors(
-                hLEDeviceThingy,
+                hLEDeviceThingy[Index],
                 currGattChar,
                 descriptorBufferSize,
                 pDescriptorBuffer,
@@ -671,7 +744,7 @@ void OpenBluetoothThingy()
                 ////////////////////////////////////////////////////////////////////////////
                 USHORT descValueDataSize;
                 hr = BluetoothGATTGetDescriptorValue(
-                    hLEDeviceThingy,
+                    hLEDeviceThingy[Index],
                     currGattDescriptor,
                     0,
                     NULL,
@@ -696,7 +769,7 @@ void OpenBluetoothThingy()
                 ////////////////////////////////////////////////////////////////////////////
 
                 hr = BluetoothGATTGetDescriptorValue(
-                    hLEDeviceThingy,
+                    hLEDeviceThingy[Index],
                     currGattDescriptor,
                     (ULONG)descValueDataSize,
                     pDescValueBuffer,
@@ -717,7 +790,7 @@ void OpenBluetoothThingy()
                     newValue.ClientCharacteristicConfiguration.IsSubscribeToNotification = TRUE;
 
                     hr = BluetoothGATTSetDescriptorValue(
-                        hLEDeviceThingy,
+                        hLEDeviceThingy[Index],
                         currGattDescriptor,
                         &newValue,
                         BLUETOOTH_GATT_FLAG_NONE);
@@ -742,13 +815,16 @@ void OpenBluetoothThingy()
             BLUETOOTH_GATT_VALUE_CHANGED_EVENT_REGISTRATION EventParameterIn;
             EventParameterIn.Characteristics[0] = *currGattChar;
             EventParameterIn.NumCharacteristics = 1;
+            //
+            CallBackValueThingy[Index] = Index;
+            //
             hr = BluetoothGATTRegisterEvent(
-                hLEDeviceThingy,
+                hLEDeviceThingy[Index],
                 EventType,
                 &EventParameterIn,
                 SomethingHappenedThingy,
-                NULL,
-                &EventHandleThingy,
+                &CallBackValueThingy[Index],
+                &EventHandleThingy[Index],
                 BLUETOOTH_GATT_FLAG_NONE);
 
             if (S_OK != hr) {
@@ -762,7 +838,7 @@ void OpenBluetoothThingy()
                                        // Determine Characteristic Value Buffer Size
                                        ////////////////////////////////////////////////////////////////////////////
             hr = BluetoothGATTGetCharacteristicValue(
-                hLEDeviceThingy,
+                hLEDeviceThingy[Index],
                 currGattChar,
                 0,
                 NULL,
@@ -787,7 +863,7 @@ void OpenBluetoothThingy()
             ////////////////////////////////////////////////////////////////////////////
 
             hr = BluetoothGATTGetCharacteristicValue(
-                hLEDeviceThingy,
+                hLEDeviceThingy[Index],
                 currGattChar,
                 (ULONG)charValueDataSize,
                 pCharValueBuffer,
@@ -814,16 +890,16 @@ void OpenBluetoothThingy()
     }
 
 }
-void OpenBluetoothWesu()
+void OpenBluetoothWesu(int Index)
 {
     //GUID can be constructed from "{xxx....}" string using CLSID
     CLSIDFromString(TEXT(TO_SEARCH_WESU_DEVICE_UUID), &AGuidWesu);
 
     //now get the handle 
-    hLEDeviceWesu = GetBLEHandle(AGuidWesu);
+    hLEDeviceWesu[Index] = GetBLEHandleOffset(AGuidWesu,Index);
 
     //
-    TickCount64Wesu = GetTickCount64();
+    TickCount64Wesu[Index] = GetTickCount64();
 
     //Step 2: Get a list of services that the device advertises
     // first send 0,NULL as the parameters to BluetoothGATTServices inorder to get the number of
@@ -834,7 +910,7 @@ void OpenBluetoothWesu()
     ////////////////////////////////////////////////////////////////////////////
 
     HRESULT hr = BluetoothGATTGetServices(
-        hLEDeviceWesu,
+        hLEDeviceWesu[Index],
         0,
         NULL,
         &serviceBufferCount,
@@ -861,7 +937,7 @@ void OpenBluetoothWesu()
 
     USHORT numServices;
     hr = BluetoothGATTGetServices(
-        hLEDeviceWesu,
+        hLEDeviceWesu[Index],
         serviceBufferCount,
         pServiceBuffer,
         &numServices,
@@ -879,7 +955,7 @@ void OpenBluetoothWesu()
 
     USHORT charBufferSize;
     hr = BluetoothGATTGetCharacteristics(
-        hLEDeviceWesu,
+        hLEDeviceWesu[Index],
         pServiceBuffer,
         0,
         NULL,
@@ -908,7 +984,7 @@ void OpenBluetoothWesu()
         ////////////////////////////////////////////////////////////////////////////
         USHORT numChars;
         hr = BluetoothGATTGetCharacteristics(
-            hLEDeviceWesu,
+            hLEDeviceWesu[Index],
             pServiceBuffer,
             charBufferSize,
             pCharBuffer,
@@ -942,7 +1018,7 @@ void OpenBluetoothWesu()
         ////////////////////////////////////////////////////////////////////////////
         USHORT descriptorBufferSize;
         hr = BluetoothGATTGetDescriptors(
-            hLEDeviceWesu,
+            hLEDeviceWesu[Index],
             currGattChar,
             0,
             NULL,
@@ -972,7 +1048,7 @@ void OpenBluetoothWesu()
 
             USHORT numDescriptors;
             hr = BluetoothGATTGetDescriptors(
-                hLEDeviceWesu,
+                hLEDeviceWesu[Index],
                 currGattChar,
                 descriptorBufferSize,
                 pDescriptorBuffer,
@@ -994,7 +1070,7 @@ void OpenBluetoothWesu()
                 ////////////////////////////////////////////////////////////////////////////
                 USHORT descValueDataSize;
                 hr = BluetoothGATTGetDescriptorValue(
-                    hLEDeviceWesu,
+                    hLEDeviceWesu[Index],
                     currGattDescriptor,
                     0,
                     NULL,
@@ -1019,7 +1095,7 @@ void OpenBluetoothWesu()
                 ////////////////////////////////////////////////////////////////////////////
 
                 hr = BluetoothGATTGetDescriptorValue(
-                    hLEDeviceWesu,
+                    hLEDeviceWesu[Index],
                     currGattDescriptor,
                     (ULONG)descValueDataSize,
                     pDescValueBuffer,
@@ -1040,7 +1116,7 @@ void OpenBluetoothWesu()
                     newValue.ClientCharacteristicConfiguration.IsSubscribeToNotification = TRUE;
 
                     hr = BluetoothGATTSetDescriptorValue(
-                        hLEDeviceWesu,
+                        hLEDeviceWesu[Index],
                         currGattDescriptor,
                         &newValue,
                         BLUETOOTH_GATT_FLAG_NONE);
@@ -1065,13 +1141,15 @@ void OpenBluetoothWesu()
             BLUETOOTH_GATT_VALUE_CHANGED_EVENT_REGISTRATION EventParameterIn;
             EventParameterIn.Characteristics[0] = *currGattChar;
             EventParameterIn.NumCharacteristics = 1;
+            CallBackValueWesu[Index] = Index;
+
             hr = BluetoothGATTRegisterEvent(
-                hLEDeviceWesu,
+                hLEDeviceWesu[Index],
                 EventType,
                 &EventParameterIn,
                 SomethingHappenedWesu,
-                NULL,
-                &EventHandleWesu,
+                &CallBackValueWesu[Index],
+                &EventHandleWesu[Index],
                 BLUETOOTH_GATT_FLAG_NONE);
 
             if (S_OK != hr) {
@@ -1085,7 +1163,7 @@ void OpenBluetoothWesu()
                                        // Determine Characteristic Value Buffer Size
                                        ////////////////////////////////////////////////////////////////////////////
             hr = BluetoothGATTGetCharacteristicValue(
-                hLEDeviceWesu,
+                hLEDeviceWesu[Index],
                 currGattChar,
                 0,
                 NULL,
@@ -1110,7 +1188,7 @@ void OpenBluetoothWesu()
             ////////////////////////////////////////////////////////////////////////////
 
             hr = BluetoothGATTGetCharacteristicValue(
-                hLEDeviceWesu,
+                hLEDeviceWesu[Index],
                 currGattChar,
                 (ULONG)charValueDataSize,
                 pCharValueBuffer,
@@ -1138,16 +1216,16 @@ void OpenBluetoothWesu()
 
 }
 
-void OpenBluetoothMotEnv()
+void OpenBluetoothMotEnv(int Index)
 {
     //GUID can be constructed from "{xxx....}" string using CLSID
     CLSIDFromString(TEXT(TO_SEARCH_MOTENV_DEVICE_UUID), &AGuidMotEnv);
 
     //now get the handle 
-    hLEDeviceMotEnv = GetBLEHandle(AGuidMotEnv);
+    hLEDeviceMotEnv[Index] = GetBLEHandleOffset(AGuidMotEnv,Index);
 
     //
-    TickCount64MotEnv = GetTickCount64();
+    TickCount64MotEnv[Index] = GetTickCount64();
 
     //Step 2: Get a list of services that the device advertises
     // first send 0,NULL as the parameters to BluetoothGATTServices inorder to get the number of
@@ -1158,7 +1236,7 @@ void OpenBluetoothMotEnv()
     ////////////////////////////////////////////////////////////////////////////
 
     HRESULT hr = BluetoothGATTGetServices(
-        hLEDeviceMotEnv,
+        hLEDeviceMotEnv[Index],
         0,
         NULL,
         &serviceBufferCount,
@@ -1185,7 +1263,7 @@ void OpenBluetoothMotEnv()
 
     USHORT numServices;
     hr = BluetoothGATTGetServices(
-        hLEDeviceMotEnv,
+        hLEDeviceMotEnv[Index],
         serviceBufferCount,
         pServiceBuffer,
         &numServices,
@@ -1203,7 +1281,7 @@ void OpenBluetoothMotEnv()
 
     USHORT charBufferSize;
     hr = BluetoothGATTGetCharacteristics(
-        hLEDeviceMotEnv,
+        hLEDeviceMotEnv[Index],
         pServiceBuffer,
         0,
         NULL,
@@ -1232,7 +1310,7 @@ void OpenBluetoothMotEnv()
         ////////////////////////////////////////////////////////////////////////////
         USHORT numChars;
         hr = BluetoothGATTGetCharacteristics(
-            hLEDeviceMotEnv,
+            hLEDeviceMotEnv[Index],
             pServiceBuffer,
             charBufferSize,
             pCharBuffer,
@@ -1266,7 +1344,7 @@ void OpenBluetoothMotEnv()
         ////////////////////////////////////////////////////////////////////////////
         USHORT descriptorBufferSize;
         hr = BluetoothGATTGetDescriptors(
-            hLEDeviceMotEnv,
+            hLEDeviceMotEnv[Index],
             currGattChar,
             0,
             NULL,
@@ -1296,7 +1374,7 @@ void OpenBluetoothMotEnv()
 
             USHORT numDescriptors;
             hr = BluetoothGATTGetDescriptors(
-                hLEDeviceMotEnv,
+                hLEDeviceMotEnv[Index],
                 currGattChar,
                 descriptorBufferSize,
                 pDescriptorBuffer,
@@ -1318,7 +1396,7 @@ void OpenBluetoothMotEnv()
                 ////////////////////////////////////////////////////////////////////////////
                 USHORT descValueDataSize;
                 hr = BluetoothGATTGetDescriptorValue(
-                    hLEDeviceMotEnv,
+                    hLEDeviceMotEnv[Index],
                     currGattDescriptor,
                     0,
                     NULL,
@@ -1343,7 +1421,7 @@ void OpenBluetoothMotEnv()
                 ////////////////////////////////////////////////////////////////////////////
 
                 hr = BluetoothGATTGetDescriptorValue(
-                    hLEDeviceMotEnv,
+                    hLEDeviceMotEnv[Index],
                     currGattDescriptor,
                     (ULONG)descValueDataSize,
                     pDescValueBuffer,
@@ -1364,7 +1442,7 @@ void OpenBluetoothMotEnv()
                     newValue.ClientCharacteristicConfiguration.IsSubscribeToNotification = TRUE;
 
                     hr = BluetoothGATTSetDescriptorValue(
-                        hLEDeviceMotEnv,
+                        hLEDeviceMotEnv[Index],
                         currGattDescriptor,
                         &newValue,
                         BLUETOOTH_GATT_FLAG_NONE);
@@ -1389,13 +1467,14 @@ void OpenBluetoothMotEnv()
             BLUETOOTH_GATT_VALUE_CHANGED_EVENT_REGISTRATION EventParameterIn;
             EventParameterIn.Characteristics[0] = *currGattChar;
             EventParameterIn.NumCharacteristics = 1;
+            CallBackValueEnv[Index] = Index;
             hr = BluetoothGATTRegisterEvent(
-                hLEDeviceMotEnv,
+                hLEDeviceMotEnv[Index],
                 EventType,
                 &EventParameterIn,
                 SomethingHappenedMotEnv,
-                NULL,
-                &EventHandleMotEnv,
+                &CallBackValueEnv[Index],
+                &EventHandleMotEnv[Index],
                 BLUETOOTH_GATT_FLAG_NONE);
 
             if (S_OK != hr) {
@@ -1409,7 +1488,7 @@ void OpenBluetoothMotEnv()
                                        // Determine Characteristic Value Buffer Size
                                        ////////////////////////////////////////////////////////////////////////////
             hr = BluetoothGATTGetCharacteristicValue(
-                hLEDeviceMotEnv,
+                hLEDeviceMotEnv[Index],
                 currGattChar,
                 0,
                 NULL,
@@ -1434,7 +1513,7 @@ void OpenBluetoothMotEnv()
             ////////////////////////////////////////////////////////////////////////////
 
             hr = BluetoothGATTGetCharacteristicValue(
-                hLEDeviceMotEnv,
+                hLEDeviceMotEnv[Index],
                 currGattChar,
                 (ULONG)charValueDataSize,
                 pCharValueBuffer,
