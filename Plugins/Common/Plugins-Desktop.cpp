@@ -347,7 +347,7 @@ HANDLE GetBLEHandleOffset(__in GUID AGuid, __in int Index)
     did.cbSize = sizeof(SP_DEVICE_INTERFACE_DATA);
     dd.cbSize = sizeof(SP_DEVINFO_DATA);
 
-    for (DWORD i = Index; SetupDiEnumDeviceInterfaces(hDI, NULL, &BluetoothInterfaceGUID, i, &did); i++)
+    for (DWORD i = 0; SetupDiEnumDeviceInterfaces(hDI, NULL, &BluetoothInterfaceGUID, i, &did); i++)
     {
         SP_DEVICE_INTERFACE_DETAIL_DATA DeviceInterfaceDetailData;
 
@@ -368,14 +368,20 @@ HANDLE GetBLEHandleOffset(__in GUID AGuid, __in int Index)
             if (!SetupDiGetDeviceInterfaceDetail(hDI, &did, pInterfaceDetailData, size, &size, &dd))
                 break;
 
-            hComm = CreateFile(
-                pInterfaceDetailData->DevicePath,
-                GENERIC_WRITE | GENERIC_READ,
-                FILE_SHARE_READ | FILE_SHARE_WRITE,
-                NULL,
-                OPEN_EXISTING,
-                FILE_FLAG_OVERLAPPED,
-                NULL);
+            //
+            // On recupere le handle du device qui nous intéresse.
+            // Si il n'existe pas ou si il n'est pas dans le range, la valeur sera NULL
+            if (i == Index)
+            {
+                hComm = CreateFile(
+                    pInterfaceDetailData->DevicePath,
+                    GENERIC_WRITE | GENERIC_READ,
+                    FILE_SHARE_READ | FILE_SHARE_WRITE,
+                    NULL,
+                    OPEN_EXISTING,
+                    FILE_FLAG_OVERLAPPED,
+                    NULL);
+            }
 
             GlobalFree(pInterfaceDetailData);
         }
