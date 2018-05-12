@@ -1,0 +1,21 @@
+﻿1>------ Début de la régénération globale : Projet : DesktopPlugins, Configuration : Debug x64 ------
+1>stdafx.cpp
+1>Plugins-Desktop.cpp
+1>c:\users\christophe\desktop\unity-technologies-windowsstoreappssamples\nativeplugins\source\plugins\common\plugins-desktop.cpp(156): warning C4477: 'printf' : la chaîne de format '%f' nécessite un argument de type 'double', mais l'argument variadique 1 est de type 'float *'
+1>c:\users\christophe\desktop\unity-technologies-windowsstoreappssamples\nativeplugins\source\plugins\common\plugins-desktop.cpp(156): warning C4477: 'printf' : la chaîne de format '%f' nécessite un argument de type 'double', mais l'argument variadique 2 est de type 'float *'
+1>c:\users\christophe\desktop\unity-technologies-windowsstoreappssamples\nativeplugins\source\plugins\common\plugins-desktop.cpp(156): warning C4477: 'printf' : la chaîne de format '%f' nécessite un argument de type 'double', mais l'argument variadique 3 est de type 'float *'
+1>c:\users\christophe\desktop\unity-technologies-windowsstoreappssamples\nativeplugins\source\plugins\common\plugins-desktop.cpp(156): warning C4477: 'printf' : la chaîne de format '%f' nécessite un argument de type 'double', mais l'argument variadique 4 est de type 'float *'
+1>c:\users\christophe\desktop\unity-technologies-windowsstoreappssamples\nativeplugins\source\plugins\common\plugins-desktop.cpp(264): warning C4477: 'printf' : la chaîne de format '%f' nécessite un argument de type 'double', mais l'argument variadique 1 est de type 'float *'
+1>c:\users\christophe\desktop\unity-technologies-windowsstoreappssamples\nativeplugins\source\plugins\common\plugins-desktop.cpp(264): warning C4477: 'printf' : la chaîne de format '%f' nécessite un argument de type 'double', mais l'argument variadique 2 est de type 'float *'
+1>c:\users\christophe\desktop\unity-technologies-windowsstoreappssamples\nativeplugins\source\plugins\common\plugins-desktop.cpp(264): warning C4477: 'printf' : la chaîne de format '%f' nécessite un argument de type 'double', mais l'argument variadique 3 est de type 'float *'
+1>c:\users\christophe\desktop\unity-technologies-windowsstoreappssamples\nativeplugins\source\plugins\common\plugins-desktop.cpp(264): warning C4477: 'printf' : la chaîne de format '%f' nécessite un argument de type 'double', mais l'argument variadique 4 est de type 'float *'
+1>c:\users\christophe\desktop\unity-technologies-windowsstoreappssamples\nativeplugins\source\plugins\common\plugins-desktop.cpp(880): warning C4018: '<' : incompatibilité signed/unsigned
+1>c:\users\christophe\desktop\unity-technologies-windowsstoreappssamples\nativeplugins\source\plugins\common\plugins-desktop.cpp(1205): warning C4018: '<' : incompatibilité signed/unsigned
+1>c:\users\christophe\desktop\unity-technologies-windowsstoreappssamples\nativeplugins\source\plugins\common\plugins-desktop.cpp(1530): warning C4018: '<' : incompatibilité signed/unsigned
+1>dllmain.cpp
+1>   Création de la bibliothèque C:\Users\Christophe\Desktop\Unity-Technologies-windowsstoreappssamples\NativePlugins\Source\Plugins\x64\Debug\Plugins.lib et de l'objet C:\Users\Christophe\Desktop\Unity-Technologies-windowsstoreappssamples\NativePlugins\Source\Plugins\x64\Debug\Plugins.exp
+1>DesktopPlugins.vcxproj -> C:\Users\Christophe\Desktop\Unity-Technologies-windowsstoreappssamples\NativePlugins\Source\Plugins\x64\Debug\Plugins.dll
+1>Un sous-répertoire ou un fichier C:\Users\Christophe\Desktop\Unity-Technologies-windowsstoreappssamples\NativePlugins\Source\Plugins\..\..\Assets\Plugins existe déjà.
+1>        1 fichier(s) copié(s).
+1>Génération du projet "DesktopPlugins.vcxproj" terminée.
+========== Régénération globale : 1 a réussi, 0 a échoué, 0 a été ignoré ==========

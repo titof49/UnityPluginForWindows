@@ -27,16 +27,20 @@
 //
 #define TO_SEARCH_MOTENV_CHARACTERISTIC_MOTENV	"{00000100-0001-11E1-AC36-0002A5D5C51B}"
 
-const int MAX_DEVICE_THINGY     =50;
-const int MAX_DEVICE_WESU       =50;
-const int MAX_DEVICE_MOTENV     =50;
+const int MAX_DEVICE_THINGY     =2;
 
+/*
+const int MAX_DEVICE_WESU       =2;
+const int MAX_DEVICE_MOTENV     =2;
+*/
 
 
 
 ULONGLONG TickCount64Thingy[MAX_DEVICE_THINGY];
+/*
 ULONGLONG TickCount64Wesu[MAX_DEVICE_WESU];
 ULONGLONG TickCount64MotEnv[MAX_DEVICE_MOTENV];
+*/
 
 //Step 1: find the BLE device handle from its GUID
 GUID AGuidThingy;
@@ -47,22 +51,56 @@ HANDLE                      hLEDeviceThingy[MAX_DEVICE_THINGY];
 BLUETOOTH_GATT_EVENT_HANDLE EventHandleThingy[MAX_DEVICE_THINGY];
 int                         CallBackValueThingy[MAX_DEVICE_THINGY];
 
-
+/*
 HANDLE                      hLEDeviceWesu[MAX_DEVICE_WESU];
 BLUETOOTH_GATT_EVENT_HANDLE EventHandleWesu[MAX_DEVICE_WESU];
 int                         CallBackValueWesu[MAX_DEVICE_WESU];
-
-
+//
 HANDLE                      hLEDeviceMotEnv[MAX_DEVICE_MOTENV];
 BLUETOOTH_GATT_EVENT_HANDLE EventHandleMotEnv[MAX_DEVICE_MOTENV];
-int                         CallBackValueEnv[MAX_DEVICE_MOTENV];
-
+int                         CallBackValueMotEnv[MAX_DEVICE_MOTENV];
+*/
 
 // Thingy  
 float                       QwThingy[MAX_DEVICE_THINGY],
                             QxThingy[MAX_DEVICE_THINGY],
                             QyThingy[MAX_DEVICE_THINGY],
                             QzThingy[MAX_DEVICE_THINGY];
+
+// Recuperation des données de la fonction de toficiation 
+unsigned char QwB[MAX_DEVICE_THINGY][4];
+unsigned char QxB[MAX_DEVICE_THINGY][4];
+unsigned char QyB[MAX_DEVICE_THINGY][4];
+unsigned char QzB[MAX_DEVICE_THINGY][4];
+
+//
+PBTH_LE_GATT_SERVICE							pServiceBuffer[MAX_DEVICE_THINGY];
+PBTH_LE_GATT_CHARACTERISTIC						pCharBuffer[MAX_DEVICE_THINGY];
+PBTH_LE_GATT_DESCRIPTOR							pDescriptorBuffer[MAX_DEVICE_THINGY];
+// PBTH_LE_GATT_DESCRIPTOR_VALUE					pDescValueBuffer[MAX_DEVICE_THINGY];
+BLUETOOTH_GATT_VALUE_CHANGED_EVENT_REGISTRATION EventParameterIn[MAX_DEVICE_THINGY];
+BTH_LE_GATT_DESCRIPTOR_VALUE					DescriptorValue[MAX_DEVICE_THINGY];
+PBLUETOOTH_GATT_VALUE_CHANGED_EVENT				ValueChangedEventParameters[MAX_DEVICE_THINGY];
+
+void CALLBACK SomethingHappenedThingy1(BTH_LE_GATT_EVENT_TYPE EventType, PVOID EventOutParameter, PVOID Context);
+void CALLBACK SomethingHappenedThingy2(BTH_LE_GATT_EVENT_TYPE EventType, PVOID EventOutParameter, PVOID Context);
+
+
+
+// Creation d'un tableau de pointeur de fonction pour dupliquer les appel ?
+typedef void (CALLBACK *CallList)(BTH_LE_GATT_EVENT_TYPE EventType, PVOID EventOutParameter, PVOID Context);
+
+CallList SomethingHappenedThingy[MAX_DEVICE_THINGY] =
+{
+    SomethingHappenedThingy1,
+    SomethingHappenedThingy2
+};
+
+
+
+
+
+/*
 // Wesu
 float                       QwWesu[MAX_DEVICE_WESU],
                             QxWesu[MAX_DEVICE_WESU],
@@ -73,20 +111,22 @@ float                       QwMotEnv[MAX_DEVICE_MOTENV],
                             QxMotEnv[MAX_DEVICE_MOTENV],
                             QyMotEnv[MAX_DEVICE_MOTENV],
                             QzMotEnv[MAX_DEVICE_MOTENV];
-
+*/
 
 //
 void OpenBluetoothThingy(int Index);
 void CloseBluetoothThingy(int Index);
-//
+/*
 void OpenBluetoothWesu(int Index);
 void CloseBluetoothWesu(int Index);
 //
 void OpenBluetoothMotEnv(int Index);
 void CloseBluetoothMotEnv(int Index);
+*/
 //
 float getQs(float qi, float qj, float qk);
 
+/*
 //this is the notification function
 void CALLBACK SomethingHappenedThingy(BTH_LE_GATT_EVENT_TYPE EventType, PVOID EventOutParameter, PVOID Context)
 {
@@ -153,7 +193,7 @@ void CALLBACK SomethingHappenedThingy(BTH_LE_GATT_EVENT_TYPE EventType, PVOID Ev
         QzThingy[*((PINT)Context)] = (float)(iQzB) / SCALE_FACTOR;
         //
         printf("%X,%X,%X,%X\n", iQwB, iQxB, iQyB, iQzB);
-        printf("%f,%f,%f,%f\n", QwThingy, QxThingy, QyThingy, QzThingy);
+        printf("%f,%f,%f,%f\n", QwThingy[*((PINT)Context)], QxThingy[*((PINT)Context)], QyThingy[*((PINT)Context)], QzThingy[*((PINT)Context)]);
         //
         ULONGLONG NewTickCount64 = GetTickCount64();
         //
@@ -162,7 +202,9 @@ void CALLBACK SomethingHappenedThingy(BTH_LE_GATT_EVENT_TYPE EventType, PVOID Ev
         TickCount64Thingy[*((PINT)Context)] = NewTickCount64;
     }
 }
+*/
 
+/*
 //this is the notification function for the Wesu
 void CALLBACK SomethingHappenedWesu(BTH_LE_GATT_EVENT_TYPE EventType, PVOID EventOutParameter, PVOID Context)
 {
@@ -218,8 +260,10 @@ void CALLBACK SomethingHappenedWesu(BTH_LE_GATT_EVENT_TYPE EventType, PVOID Even
         TickCount64Wesu[*((PINT)Context)] = NewTickCount64;
     }
 }
+*/
 
-//this is the notification function for the Wesu
+/*
+//this is the notification function for the MotEnv
 void CALLBACK SomethingHappenedMotEnv(BTH_LE_GATT_EVENT_TYPE EventType, PVOID EventOutParameter, PVOID Context)
 {
     //
@@ -261,7 +305,7 @@ void CALLBACK SomethingHappenedMotEnv(BTH_LE_GATT_EVENT_TYPE EventType, PVOID Ev
 
 
         //
-        printf("%f,%f,%f,%f\n", QxMotEnv, QyMotEnv, QzMotEnv, QwMotEnv);
+        printf("%f,%f,%f,%f\n", QxMotEnv[*((PINT)Context)], QyMotEnv[*((PINT)Context)], QzMotEnv[*((PINT)Context)], QwMotEnv[*((PINT)Context)]);
         //
         ULONGLONG NewTickCount64 = GetTickCount64();
         //
@@ -270,58 +314,6 @@ void CALLBACK SomethingHappenedMotEnv(BTH_LE_GATT_EVENT_TYPE EventType, PVOID Ev
         TickCount64Wesu[*((PINT)Context)] = NewTickCount64;
      }
 }
-
-
-/*
-public String ParseMOTBLM(byte[] data)
-{
-float SCALE_FACTOR = 10000.0f;
-
-
-//
-String Retour = "";
-//
-float qi, qj, qk, qs;
-
-byte[] QiB = new byte[4];
-byte[] QjB = new byte[4];
-byte[] QkB = new byte[4];
-byte[] QsB = new byte[4];
-
-
-//
-QiB[0] = data[2];
-QiB[1] = data[3];
-qi = (float)(BitConverter.ToInt16(QiB, 0)) / SCALE_FACTOR;
-
-//
-QjB[0] = data[4];
-QjB[1] = data[5];
-qj = (float)(BitConverter.ToInt16(QjB, 0)) / SCALE_FACTOR;
-
-//
-QkB[0] = data[6];
-QkB[1] = data[7];
-qk = (float)(BitConverter.ToInt16(QkB, 0)) / SCALE_FACTOR;
-
-// on calcule qs
-qs = getQs(qi, qj, qk);
-rootPage.Q1 = new SharpDX.Quaternion(qi, qj, qk, qs);
-
-//
-Retour = String.Format("Qi:{0},Qj:{1},Qk:{2},Qs:{3}, Norm {4}", qi, qj, qk, qs, rootPage.Q1.IsNormalized);
-// Retour = String.Format("Angle: x:{0},y:{1},z:{2}", rootPage.Q1.Axis.X, rootPage.Q1.Axis.Y, rootPage.Q1.Axis.Z);
-return Retour;
-}
-
-float getQs(float qi, float qj, float qk)
-{
-float t = 1 - (qi * qi + qj * qj + qk * qk);
-return t > 0 ? (float)(Math.Sqrt(t)) : 0;
-
-}
-
-
 */
 
 float getQs(float qi, float qj, float qk)
@@ -331,6 +323,314 @@ float getQs(float qi, float qj, float qk)
 
 }
 
+/*
+HANDLE GetBLEHandleOffset(__in GUID AGuid, __in int Index)
+{
+    HDEVINFO hDI;
+    SP_DEVICE_INTERFACE_DATA did;
+    SP_DEVINFO_DATA dd;
+    GUID BluetoothInterfaceGUID = AGuid;
+    HANDLE hComm = NULL;
+
+    hDI = SetupDiGetClassDevs(&BluetoothInterfaceGUID, NULL, NULL, DIGCF_DEVICEINTERFACE | DIGCF_PRESENT);
+
+    if (hDI == INVALID_HANDLE_VALUE) return NULL;
+
+    did.cbSize = sizeof(SP_DEVICE_INTERFACE_DATA);
+    dd.cbSize = sizeof(SP_DEVINFO_DATA);
+
+    for (DWORD i = 0; SetupDiEnumDeviceInterfaces(hDI, NULL, &BluetoothInterfaceGUID, i, &did); i++)
+    {
+        SP_DEVICE_INTERFACE_DETAIL_DATA DeviceInterfaceDetailData;
+
+        DeviceInterfaceDetailData.cbSize = sizeof(SP_DEVICE_INTERFACE_DETAIL_DATA);
+
+        DWORD size = 0;
+
+        if (!SetupDiGetDeviceInterfaceDetail(hDI, &did, NULL, 0, &size, 0))
+        {
+            int err = GetLastError();
+
+            if (err == ERROR_NO_MORE_ITEMS) break;
+
+            PSP_DEVICE_INTERFACE_DETAIL_DATA pInterfaceDetailData = (PSP_DEVICE_INTERFACE_DETAIL_DATA)GlobalAlloc(GPTR, size);
+
+            pInterfaceDetailData->cbSize = sizeof(SP_DEVICE_INTERFACE_DETAIL_DATA);
+
+            if (!SetupDiGetDeviceInterfaceDetail(hDI, &did, pInterfaceDetailData, size, &size, &dd))
+                break;
+
+            //
+            // On recupere le handle du device qui nous intéresse.
+            // Si il n'existe pas ou si il n'est pas dans le range, la valeur sera NULL
+            if (i == Index)
+            {
+                hComm = CreateFile(
+                    pInterfaceDetailData->DevicePath,
+                    GENERIC_WRITE | GENERIC_READ,
+                    FILE_SHARE_READ | FILE_SHARE_WRITE,
+                    NULL,
+                    OPEN_EXISTING,
+                    FILE_FLAG_OVERLAPPED,
+                    NULL);
+            }
+
+            GlobalFree(pInterfaceDetailData);
+        }
+    }
+
+    SetupDiDestroyDeviceInfoList(hDI);
+    return hComm;
+}
+*/
+
+
+extern "C" float __declspec(dllexport) _stdcall GetFloatWThingy(int Index)
+{
+    return QwThingy[Index];
+}
+
+extern "C" float __declspec(dllexport) _stdcall GetFloatXThingy(int Index)
+{
+	return QxThingy[Index];
+}
+
+extern "C" float __declspec(dllexport) _stdcall GetFloatYThingy(int Index)
+{
+    return QyThingy[Index];
+}
+
+extern "C" float __declspec(dllexport) _stdcall GetFloatZThingy(int Index)
+{
+    return QzThingy[Index];
+}
+
+
+/*
+
+extern "C" float __declspec(dllexport) _stdcall GetFloatWWesu(int Index)
+{
+    return QwWesu[Index];
+}
+
+extern "C" float __declspec(dllexport) _stdcall GetFloatXWesu(int Index)
+{
+    return QxWesu[Index];
+}
+
+extern "C" float __declspec(dllexport) _stdcall GetFloatYWesu(int Index)
+{
+    return QyWesu[Index];
+}
+
+extern "C" float __declspec(dllexport) _stdcall GetFloatZWesu(int Index)
+{
+    return QzWesu[Index];
+}
+*/
+
+/*
+extern "C" float __declspec(dllexport) _stdcall GetFloatXMotEnv(int Index)
+{
+    return QxMotEnv[Index];
+}
+
+extern "C" float __declspec(dllexport) _stdcall GetFloatYMotEnv(int Index)
+{
+    return QyMotEnv[Index];
+}
+
+extern "C" float __declspec(dllexport) _stdcall GetFloatZMotEnv(int Index)
+{
+    return QzMotEnv[Index];
+}
+
+extern "C" float __declspec(dllexport) _stdcall GetFloatWMotEnv(int Index)
+{
+    return QwMotEnv[Index];
+}
+*/
+
+extern "C" void __declspec(dllexport) _stdcall OpenBleThingy(int Index)
+{
+    // Ouverture de la connexion
+    OpenBluetoothThingy(Index);
+}
+
+extern "C" void __declspec(dllexport) _stdcall CloseBleThingy(int Index)
+{
+    // Fermeture de la connexion
+    CloseBluetoothThingy(Index);
+}
+
+/*
+extern "C" void __declspec(dllexport) _stdcall OpenBleWesu(int Index)
+{
+    // Ouverture de la connexion
+    OpenBluetoothWesu(Index);
+}
+
+extern "C" void __declspec(dllexport) _stdcall CloseBleWesu(int Index)
+{
+    // Fermeture de la connexion
+    CloseBluetoothWesu(Index);
+}
+
+extern "C" void __declspec(dllexport) _stdcall OpenBleMotEnv(int Index)
+{
+    // Ouverture de la connexion
+    OpenBluetoothMotEnv(Index);
+}
+
+extern "C" void __declspec(dllexport) _stdcall CloseBleMotEnv(int Index)
+{
+    // Fermeture de la connexion
+    CloseBluetoothMotEnv(Index);
+}
+*/
+
+//
+void CloseBluetoothThingy(int Index)
+{
+    BluetoothGATTUnregisterEvent(EventHandleThingy[Index], BLUETOOTH_GATT_FLAG_NONE);
+    CloseHandle(hLEDeviceThingy[Index]);
+}
+
+
+//this is the notification function
+void CALLBACK SomethingHappenedThingy1(BTH_LE_GATT_EVENT_TYPE EventType, PVOID EventOutParameter, PVOID Context)
+{
+    float SCALE_FACTOR = 1073741824.0F;
+    // printf("notification obtained %d \r\n",*((PINT)Context));
+    ValueChangedEventParameters[*((PINT)Context)] = (PBLUETOOTH_GATT_VALUE_CHANGED_EVENT)EventOutParameter;
+
+    HRESULT hr;
+    if (0x10 != ValueChangedEventParameters[*((PINT)Context)]->CharacteristicValue->DataSize) {
+        hr = E_FAIL;
+        printf("datasize 0\n");
+    }
+    else
+    {
+        // printf("Thingy");
+        //
+        QwB[*((PINT)Context)][0] = ValueChangedEventParameters[*((PINT)Context)]->CharacteristicValue->Data[0];
+        QwB[*((PINT)Context)][1] = ValueChangedEventParameters[*((PINT)Context)]->CharacteristicValue->Data[1];
+        QwB[*((PINT)Context)][2] = ValueChangedEventParameters[*((PINT)Context)]->CharacteristicValue->Data[2];
+        QwB[*((PINT)Context)][3] = ValueChangedEventParameters[*((PINT)Context)]->CharacteristicValue->Data[3];
+        //
+        int iQwB = ((QwB[*((PINT)Context)][3] << 24) & 0xff000000) |
+            ((QwB[*((PINT)Context)][2] << 16) & 0x00ff0000) |
+            ((QwB[*((PINT)Context)][1] << 8) & 0x0000ff00) |
+            ((QwB[*((PINT)Context)][0] << 0) & 0x000000ff);
+        //
+        QxB[*((PINT)Context)][0] = ValueChangedEventParameters[*((PINT)Context)]->CharacteristicValue->Data[4];
+        QxB[*((PINT)Context)][1] = ValueChangedEventParameters[*((PINT)Context)]->CharacteristicValue->Data[5];
+        QxB[*((PINT)Context)][2] = ValueChangedEventParameters[*((PINT)Context)]->CharacteristicValue->Data[6];
+        QxB[*((PINT)Context)][3] = ValueChangedEventParameters[*((PINT)Context)]->CharacteristicValue->Data[7];
+        //
+        int iQxB = ((QxB[*((PINT)Context)][3] << 24) & 0xff000000) |
+            ((QxB[*((PINT)Context)][2] << 16) & 0x00ff0000) |
+            ((QxB[*((PINT)Context)][1] << 8) & 0x0000ff00) |
+            ((QxB[*((PINT)Context)][0] << 0) & 0x000000ff);
+        //
+        QyB[*((PINT)Context)][0] = ValueChangedEventParameters[*((PINT)Context)]->CharacteristicValue->Data[8];
+        QyB[*((PINT)Context)][1] = ValueChangedEventParameters[*((PINT)Context)]->CharacteristicValue->Data[9];
+        QyB[*((PINT)Context)][2] = ValueChangedEventParameters[*((PINT)Context)]->CharacteristicValue->Data[10];
+        QyB[*((PINT)Context)][3] = ValueChangedEventParameters[*((PINT)Context)]->CharacteristicValue->Data[11];
+        //
+        int iQyB = ((QyB[*((PINT)Context)][3] << 24) & 0xff000000) |
+            ((QyB[*((PINT)Context)][2] << 16) & 0x00ff0000) |
+            ((QyB[*((PINT)Context)][1] << 8) & 0x0000ff00) |
+            ((QyB[*((PINT)Context)][0] << 0) & 0x000000ff);
+        //
+        QzB[*((PINT)Context)][0] = ValueChangedEventParameters[*((PINT)Context)]->CharacteristicValue->Data[12];
+        QzB[*((PINT)Context)][1] = ValueChangedEventParameters[*((PINT)Context)]->CharacteristicValue->Data[13];
+        QzB[*((PINT)Context)][2] = ValueChangedEventParameters[*((PINT)Context)]->CharacteristicValue->Data[14];
+        QzB[*((PINT)Context)][3] = ValueChangedEventParameters[*((PINT)Context)]->CharacteristicValue->Data[15];
+        //
+        int iQzB = ((QzB[*((PINT)Context)][3] << 24) & 0xff000000) |
+            ((QzB[*((PINT)Context)][2] << 16) & 0x00ff0000) |
+            ((QzB[*((PINT)Context)][1] << 8) & 0x0000ff00) |
+            ((QzB[*((PINT)Context)][0] << 0) & 0x000000ff);
+
+        // reduction en flottant
+        QwThingy[*((PINT)Context)] = (float)(iQwB) / SCALE_FACTOR;
+        QxThingy[*((PINT)Context)] = (float)(iQxB) / SCALE_FACTOR;
+        QyThingy[*((PINT)Context)] = (float)(iQyB) / SCALE_FACTOR;
+        QzThingy[*((PINT)Context)] = (float)(iQzB) / SCALE_FACTOR;
+        //
+        TickCount64Thingy[*((PINT)Context)] = GetTickCount64();
+    }
+}
+
+//this is the notification function
+void CALLBACK SomethingHappenedThingy2(BTH_LE_GATT_EVENT_TYPE EventType, PVOID EventOutParameter, PVOID Context)
+{
+    float SCALE_FACTOR = 1073741824.0F;
+    // printf("notification obtained %d \r\n", *((PINT)Context));
+    ValueChangedEventParameters[*((PINT)Context)] = (PBLUETOOTH_GATT_VALUE_CHANGED_EVENT)EventOutParameter;
+
+    HRESULT hr;
+    if (0x10 != ValueChangedEventParameters[*((PINT)Context)]->CharacteristicValue->DataSize) {
+        hr = E_FAIL;
+        printf("datasize 0\n");
+    }
+    else
+    {
+        // printf("Thingy");
+        //
+        QwB[*((PINT)Context)][0] = ValueChangedEventParameters[*((PINT)Context)]->CharacteristicValue->Data[0];
+        QwB[*((PINT)Context)][1] = ValueChangedEventParameters[*((PINT)Context)]->CharacteristicValue->Data[1];
+        QwB[*((PINT)Context)][2] = ValueChangedEventParameters[*((PINT)Context)]->CharacteristicValue->Data[2];
+        QwB[*((PINT)Context)][3] = ValueChangedEventParameters[*((PINT)Context)]->CharacteristicValue->Data[3];
+        //
+        int iQwB = ((QwB[*((PINT)Context)][3] << 24) & 0xff000000) |
+            ((QwB[*((PINT)Context)][2] << 16) & 0x00ff0000) |
+            ((QwB[*((PINT)Context)][1] << 8) & 0x0000ff00) |
+            ((QwB[*((PINT)Context)][0] << 0) & 0x000000ff);
+        //
+        QxB[*((PINT)Context)][0] = ValueChangedEventParameters[*((PINT)Context)]->CharacteristicValue->Data[4];
+        QxB[*((PINT)Context)][1] = ValueChangedEventParameters[*((PINT)Context)]->CharacteristicValue->Data[5];
+        QxB[*((PINT)Context)][2] = ValueChangedEventParameters[*((PINT)Context)]->CharacteristicValue->Data[6];
+        QxB[*((PINT)Context)][3] = ValueChangedEventParameters[*((PINT)Context)]->CharacteristicValue->Data[7];
+        //
+        int iQxB = ((QxB[*((PINT)Context)][3] << 24) & 0xff000000) |
+            ((QxB[*((PINT)Context)][2] << 16) & 0x00ff0000) |
+            ((QxB[*((PINT)Context)][1] << 8) & 0x0000ff00) |
+            ((QxB[*((PINT)Context)][0] << 0) & 0x000000ff);
+        //
+        QyB[*((PINT)Context)][0] = ValueChangedEventParameters[*((PINT)Context)]->CharacteristicValue->Data[8];
+        QyB[*((PINT)Context)][1] = ValueChangedEventParameters[*((PINT)Context)]->CharacteristicValue->Data[9];
+        QyB[*((PINT)Context)][2] = ValueChangedEventParameters[*((PINT)Context)]->CharacteristicValue->Data[10];
+        QyB[*((PINT)Context)][3] = ValueChangedEventParameters[*((PINT)Context)]->CharacteristicValue->Data[11];
+        //
+        int iQyB = ((QyB[*((PINT)Context)][3] << 24) & 0xff000000) |
+            ((QyB[*((PINT)Context)][2] << 16) & 0x00ff0000) |
+            ((QyB[*((PINT)Context)][1] << 8) & 0x0000ff00) |
+            ((QyB[*((PINT)Context)][0] << 0) & 0x000000ff);
+        //
+        QzB[*((PINT)Context)][0] = ValueChangedEventParameters[*((PINT)Context)]->CharacteristicValue->Data[12];
+        QzB[*((PINT)Context)][1] = ValueChangedEventParameters[*((PINT)Context)]->CharacteristicValue->Data[13];
+        QzB[*((PINT)Context)][2] = ValueChangedEventParameters[*((PINT)Context)]->CharacteristicValue->Data[14];
+        QzB[*((PINT)Context)][3] = ValueChangedEventParameters[*((PINT)Context)]->CharacteristicValue->Data[15];
+        //
+        int iQzB = ((QzB[*((PINT)Context)][3] << 24) & 0xff000000) |
+            ((QzB[*((PINT)Context)][2] << 16) & 0x00ff0000) |
+            ((QzB[*((PINT)Context)][1] << 8) & 0x0000ff00) |
+            ((QzB[*((PINT)Context)][0] << 0) & 0x000000ff);
+
+        // reduction en flottant
+        QwThingy[*((PINT)Context)] = (float)(iQwB) / SCALE_FACTOR;
+        QxThingy[*((PINT)Context)] = (float)(iQxB) / SCALE_FACTOR;
+        QyThingy[*((PINT)Context)] = (float)(iQyB) / SCALE_FACTOR;
+        QzThingy[*((PINT)Context)] = (float)(iQzB) / SCALE_FACTOR;
+        //
+        TickCount64Thingy[*((PINT)Context)] = GetTickCount64();
+    }
+}
+
+
+// fonct validé
 
 HANDLE GetBLEHandleOffset(__in GUID AGuid, __in int Index)
 {
@@ -392,172 +692,187 @@ HANDLE GetBLEHandleOffset(__in GUID AGuid, __in int Index)
 }
 
 
+void OpenBluetoothThingy(int Index)
+{
+    //GUID can be constructed from "{xxx....}" string using CLSID
+    CLSIDFromString(TEXT(TO_SEARCH_DEVICE_UUID), &AGuidThingy);
+
+    //now get the handle 
+    hLEDeviceThingy[Index] = GetBLEHandleOffset(AGuidThingy, Index);
+
+    //
+    TickCount64Thingy[Index] = GetTickCount64();
+
+    //Step 2: Get a list of services that the device advertises
+    // first send 0,NULL as the parameters to BluetoothGATTServices inorder to get the number of
+    // services in serviceBufferCount
+    USHORT serviceBufferCount;
+    ////////////////////////////////////////////////////////////////////////////
+    // Determine Services Buffer Size
+    ////////////////////////////////////////////////////////////////////////////
+
+    // https://msdn.microsoft.com/en-us/library/windows/hardware/hh450802(v=vs.85).aspx
+
+    HRESULT hr = BluetoothGATTGetServices(hLEDeviceThingy[Index], 0, NULL, &serviceBufferCount, BLUETOOTH_GATT_FLAG_NONE);
+    if (hr != S_OK) { printf("BluetoothGATTGetServices: Error during initialisation\r\n"); }
+
+    pServiceBuffer[Index] = (PBTH_LE_GATT_SERVICE)GlobalAlloc(GPTR, sizeof(BTH_LE_GATT_SERVICE) * serviceBufferCount);
+
+    if (NULL == pServiceBuffer[Index])
+    {
+        printf("Error memory allocation\r\n");
+    }
+    else
+    {
+        RtlZeroMemory(pServiceBuffer[Index], sizeof(BTH_LE_GATT_SERVICE) * serviceBufferCount);
+        ////////////////////////////////////////////////////////////////////////////
+        // Retrieve Services
+        ////////////////////////////////////////////////////////////////////////////
+
+        USHORT numServices;
+        hr = BluetoothGATTGetServices(hLEDeviceThingy[Index], serviceBufferCount, pServiceBuffer[Index], &numServices, BLUETOOTH_GATT_FLAG_NONE);
+        if (hr != S_OK) { printf("BluetoothGATTGetServices: Error When obtening information\r\n"); }
+
+
+        //Step 3: now get the list of charactersitics. note how the pServiceBuffer[Index] is required from step 2
+        ////////////////////////////////////////////////////////////////////////////
+        // Determine Characteristic Buffer Size
+        ////////////////////////////////////////////////////////////////////////////
+
+        USHORT charBufferSize;
+        hr = BluetoothGATTGetCharacteristics(hLEDeviceThingy[Index], pServiceBuffer[Index], 0, NULL, &charBufferSize, BLUETOOTH_GATT_FLAG_NONE);
+        if (hr != S_OK) { printf("BluetoothGATTGetCharacteristics: Error during initialisation\r\n"); }
+        //
+        if (charBufferSize > 0)
+        {
+            pCharBuffer[Index] = (PBTH_LE_GATT_CHARACTERISTIC)GlobalAlloc(GPTR, charBufferSize * sizeof(BTH_LE_GATT_CHARACTERISTIC));
+            //
+            if (NULL == pCharBuffer[Index])
+            {
+                printf("Error memory allocation\r\n");
+            }
+            else
+            {
+                RtlZeroMemory(pCharBuffer[Index], charBufferSize * sizeof(BTH_LE_GATT_CHARACTERISTIC));
+
+                ////////////////////////////////////////////////////////////////////////////
+                // Retrieve Characteristics
+                ////////////////////////////////////////////////////////////////////////////
+                USHORT numChars;
+                hr = BluetoothGATTGetCharacteristics(hLEDeviceThingy[Index], pServiceBuffer[Index], charBufferSize, pCharBuffer[Index], &numChars, BLUETOOTH_GATT_FLAG_NONE);
+                if (hr != S_OK) { printf("BluetoothGATTGetCharacteristics: Error When obtening information\r\n"); }
+                if (numChars != charBufferSize) { printf("buffer size and buffer size actual size mismatch\r\n"); }
+
+                //Step 4: now get the list of descriptors. note how the pCharBuffer is required from step 3
+                //descriptors are required as we descriptors that are notification based will have to be written
+                //once IsSubcribeToNotification set to true, we set the appropriate callback function
+                //need for setting descriptors for notification according to
+                //http://social.msdn.microsoft.com/Forums/en-US/11d3a7ce-182b-4190-bf9d-64fefc3328d9/windows-bluetooth-le-apis-event-callbacks?forum=wdk
+                PBTH_LE_GATT_CHARACTERISTIC currGattChar;
+                for (int ii = 0; ii < charBufferSize; ii++)
+                {
+                    //
+                    // 
+                    currGattChar = &pCharBuffer[Index][ii];
+                    //
+                    ///////////////////////////////////////////////////////////////////////////
+                    // Determine Descriptor Buffer Size
+                    ////////////////////////////////////////////////////////////////////////////
+                    USHORT descriptorBufferSize;
+                    hr = BluetoothGATTGetDescriptors(hLEDeviceThingy[Index], currGattChar, 0, NULL, &descriptorBufferSize, BLUETOOTH_GATT_FLAG_NONE);
+                    if (hr != S_OK) { printf("BluetoothGATTGetDescriptors: Error When obtening information\r\n"); }
+
+
+                    if (descriptorBufferSize > 0)
+                    {
+                        pDescriptorBuffer[Index] = (PBTH_LE_GATT_DESCRIPTOR)GlobalAlloc(GPTR, descriptorBufferSize * sizeof(BTH_LE_GATT_DESCRIPTOR));
+
+                        if (NULL == pDescriptorBuffer[Index])
+                        {
+                            printf("Error memory allocation\r\n");
+                        }
+                        else
+                        {
+                            RtlZeroMemory(pDescriptorBuffer[Index], descriptorBufferSize);
+
+                            ////////////////////////////////////////////////////////////////////////////
+                            // Retrieve Descriptors
+                            ////////////////////////////////////////////////////////////////////////////
+
+                            USHORT numDescriptors;
+                            hr = BluetoothGATTGetDescriptors(hLEDeviceThingy[Index], currGattChar, descriptorBufferSize, pDescriptorBuffer[Index], &numDescriptors, BLUETOOTH_GATT_FLAG_NONE);
+                            if (hr != S_OK) { printf("BluetoothGATTGetDescriptors: Error When obtening information\r\n"); }
+
+                            if (numDescriptors != descriptorBufferSize) {
+                                printf("buffer size and buffer size actual size mismatch\r\n");
+                            }
+
+                            for (int kk = 0; kk < numDescriptors; kk++)
+                            {
+                                // Recuperation du pointeur
+                                PBTH_LE_GATT_DESCRIPTOR  currGattDescriptor = &pDescriptorBuffer[Index][kk];
+                                //
+                                if ((currGattDescriptor->AttributeHandle < 255) && (currGattChar->CharacteristicUuid.Value.ShortUuid == 0x404))
+                                {
+                                    // Creation d'une nouvelle structure
+                                    RtlZeroMemory(&DescriptorValue[Index], sizeof(BTH_LE_GATT_DESCRIPTOR_VALUE));
+
+                                    // Initialisattion de la structure
+                                    DescriptorValue[Index].DescriptorType = ClientCharacteristicConfiguration;
+                                    DescriptorValue[Index].ClientCharacteristicConfiguration.IsSubscribeToNotification = TRUE;
+
+                                    hr = BluetoothGATTSetDescriptorValue(hLEDeviceThingy[Index], currGattDescriptor, &DescriptorValue[Index], BLUETOOTH_GATT_FLAG_NONE);
+                                    if (S_OK != hr) {
+                                        printf("BluetoothGATTGetDescriptorValue - Actual Data %d\n", hr);
+                                    }
+                                    else {
+                                        printf("setting notification for serivice handle %d\n", currGattDescriptor->ServiceHandle);
+                                    }
+                                }
+                            }
+
+
+                            // Activation des notifications
+                            if ((currGattChar->IsNotifiable) && (currGattChar->CharacteristicUuid.Value.ShortUuid == 0x404))
+                            {
+                                printf("Setting Notification for ServiceHandle %d --- %X \n", currGattChar->ServiceHandle, currGattChar->CharacteristicUuid.Value.ShortUuid);
+                                BTH_LE_GATT_EVENT_TYPE EventType = CharacteristicValueChangedEvent;
+                                memcpy(EventParameterIn[Index].Characteristics, currGattChar, sizeof(BTH_LE_GATT_CHARACTERISTIC));
+                                EventParameterIn[Index].NumCharacteristics = 1;
+                                //
+                                CallBackValueThingy[Index] = Index;
+                                //
+                                hr = BluetoothGATTRegisterEvent(hLEDeviceThingy[Index], EventType,
+                                    &EventParameterIn[Index], SomethingHappenedThingy[Index],
+                                    &CallBackValueThingy[Index], &EventHandleThingy[Index],
+                                    BLUETOOTH_GATT_FLAG_NONE);
+
+                                if (S_OK != hr) {
+                                    printf("BluetoothGATTRegisterEvent - Actual Data %d", hr);
+                                }
+                            }
+
+                            // Libération de la memoire
+                            GlobalFree(pDescriptorBuffer[Index]);
+                        }
+                        // Si descriptor buffer size >0
+                    }
+                    // Parcours des caractéristiques du service
+                }
+                // Liberation de la memoire des charactéristiques
+                GlobalFree(pCharBuffer[Index]);
+            }
+            //FSI
+            // Taille du bufferchar >0
+        }
+        // Liberation de l'allocation memoire des services
+        GlobalFree(pServiceBuffer[Index]);
+    }
+}
+
+
 
 /*
-//this function works to get a handle for a BLE device based on its GUID
-//copied from http://social.msdn.microsoft.com/Forums/windowshardware/en-US/e5e1058d-5a64-4e60-b8e2-0ce327c13058/erroraccessdenied-error-when-trying-to-receive-data-from-bluetooth-low-energy-devices?forum=wdk
-//credits to Andrey_sh
-HANDLE GetBLEHandle(__in GUID AGuid)
-{
-    HDEVINFO hDI;
-    SP_DEVICE_INTERFACE_DATA did;
-    SP_DEVINFO_DATA dd;
-    GUID BluetoothInterfaceGUID = AGuid;
-    HANDLE hComm = NULL;
-
-    hDI = SetupDiGetClassDevs(&BluetoothInterfaceGUID, NULL, NULL, DIGCF_DEVICEINTERFACE | DIGCF_PRESENT);
-
-    if (hDI == INVALID_HANDLE_VALUE) return NULL;
-
-    did.cbSize = sizeof(SP_DEVICE_INTERFACE_DATA);
-    dd.cbSize = sizeof(SP_DEVINFO_DATA);
-
-    for (DWORD i = 0; SetupDiEnumDeviceInterfaces(hDI, NULL, &BluetoothInterfaceGUID, i, &did); i++)
-    {
-        SP_DEVICE_INTERFACE_DETAIL_DATA DeviceInterfaceDetailData;
-
-        DeviceInterfaceDetailData.cbSize = sizeof(SP_DEVICE_INTERFACE_DETAIL_DATA);
-
-        DWORD size = 0;
-
-        if (!SetupDiGetDeviceInterfaceDetail(hDI, &did, NULL, 0, &size, 0))
-        {
-            int err = GetLastError();
-
-            if (err == ERROR_NO_MORE_ITEMS) break;
-
-            PSP_DEVICE_INTERFACE_DETAIL_DATA pInterfaceDetailData = (PSP_DEVICE_INTERFACE_DETAIL_DATA)GlobalAlloc(GPTR, size);
-
-            pInterfaceDetailData->cbSize = sizeof(SP_DEVICE_INTERFACE_DETAIL_DATA);
-
-            if (!SetupDiGetDeviceInterfaceDetail(hDI, &did, pInterfaceDetailData, size, &size, &dd))
-                break;
-
-            hComm = CreateFile(
-                pInterfaceDetailData->DevicePath,
-                GENERIC_WRITE | GENERIC_READ,
-                FILE_SHARE_READ | FILE_SHARE_WRITE,
-                NULL,
-                OPEN_EXISTING,
-                FILE_FLAG_OVERLAPPED,
-                NULL);
-
-            GlobalFree(pInterfaceDetailData);
-        }
-    }
-
-    SetupDiDestroyDeviceInfoList(hDI);
-    return hComm;
-}
-*/
-
-extern "C" float __declspec(dllexport) _stdcall GetFloatWThingy(int Index)
-{
-    return QwThingy[Index];
-}
-
-extern "C" float __declspec(dllexport) _stdcall GetFloatXThingy(int Index)
-{
-	return QxThingy[Index];
-}
-
-extern "C" float __declspec(dllexport) _stdcall GetFloatYThingy(int Index)
-{
-    return QyThingy[Index];
-}
-
-extern "C" float __declspec(dllexport) _stdcall GetFloatZThingy(int Index)
-{
-    return QzThingy[Index];
-}
-
-
-
-
-extern "C" float __declspec(dllexport) _stdcall GetFloatWWesu(int Index)
-{
-    return QwWesu[Index];
-}
-
-extern "C" float __declspec(dllexport) _stdcall GetFloatXWesu(int Index)
-{
-    return QxWesu[Index];
-}
-
-extern "C" float __declspec(dllexport) _stdcall GetFloatYWesu(int Index)
-{
-    return QyWesu[Index];
-}
-
-extern "C" float __declspec(dllexport) _stdcall GetFloatZWesu(int Index)
-{
-    return QzWesu[Index];
-}
-
-extern "C" float __declspec(dllexport) _stdcall GetFloatXMotEnv(int Index)
-{
-    return QxMotEnv[Index];
-}
-
-extern "C" float __declspec(dllexport) _stdcall GetFloatYMotEnv(int Index)
-{
-    return QyMotEnv[Index];
-}
-
-extern "C" float __declspec(dllexport) _stdcall GetFloatZMotEnv(int Index)
-{
-    return QzMotEnv[Index];
-}
-
-extern "C" float __declspec(dllexport) _stdcall GetFloatWMotEnv(int Index)
-{
-    return QwMotEnv[Index];
-}
-
-
-extern "C" void __declspec(dllexport) _stdcall OpenBleThingy(int Index)
-{
-    // Ouverture de la connexion
-    OpenBluetoothThingy(Index);
-}
-
-extern "C" void __declspec(dllexport) _stdcall CloseBleThingy(int Index)
-{
-    // Fermeture de la connexion
-    CloseBluetoothThingy(Index);
-}
-
-extern "C" void __declspec(dllexport) _stdcall OpenBleWesu(int Index)
-{
-    // Ouverture de la connexion
-    OpenBluetoothWesu(Index);
-}
-
-extern "C" void __declspec(dllexport) _stdcall CloseBleWesu(int Index)
-{
-    // Fermeture de la connexion
-    CloseBluetoothWesu(Index);
-}
-
-extern "C" void __declspec(dllexport) _stdcall OpenBleMotEnv(int Index)
-{
-    // Ouverture de la connexion
-    OpenBluetoothMotEnv(Index);
-}
-
-extern "C" void __declspec(dllexport) _stdcall CloseBleMotEnv(int Index)
-{
-    // Fermeture de la connexion
-    CloseBluetoothMotEnv(Index);
-}
-
-//
-void CloseBluetoothThingy(int Index)
-{
-    BluetoothGATTUnregisterEvent(EventHandleThingy[Index], BLUETOOTH_GATT_FLAG_NONE);
-    CloseHandle(hLEDeviceThingy[Index]);
-}
-
 void CloseBluetoothWesu(int Index)
 {
     BluetoothGATTUnregisterEvent(EventHandleWesu[Index], BLUETOOTH_GATT_FLAG_NONE);
@@ -569,7 +884,9 @@ void CloseBluetoothMotEnv(int Index)
     BluetoothGATTUnregisterEvent(EventHandleMotEnv[Index], BLUETOOTH_GATT_FLAG_NONE);
     CloseHandle(hLEDeviceMotEnv[Index]);
 }
+*/
 
+/*
 void OpenBluetoothThingy(int Index)
 {
     //GUID can be constructed from "{xxx....}" string using CLSID
@@ -896,6 +1213,9 @@ void OpenBluetoothThingy(int Index)
     }
 
 }
+*/
+
+/*Wesu 
 void OpenBluetoothWesu(int Index)
 {
     //GUID can be constructed from "{xxx....}" string using CLSID
@@ -1221,7 +1541,9 @@ void OpenBluetoothWesu(int Index)
     }
 
 }
+*/
 
+/* Mot
 void OpenBluetoothMotEnv(int Index)
 {
     //GUID can be constructed from "{xxx....}" string using CLSID
@@ -1473,13 +1795,13 @@ void OpenBluetoothMotEnv(int Index)
             BLUETOOTH_GATT_VALUE_CHANGED_EVENT_REGISTRATION EventParameterIn;
             EventParameterIn.Characteristics[0] = *currGattChar;
             EventParameterIn.NumCharacteristics = 1;
-            CallBackValueEnv[Index] = Index;
+            CallBackValueMotEnv[Index] = Index;
             hr = BluetoothGATTRegisterEvent(
                 hLEDeviceMotEnv[Index],
                 EventType,
                 &EventParameterIn,
                 SomethingHappenedMotEnv,
-                &CallBackValueEnv[Index],
+                &CallBackValueMotEnv[Index],
                 &EventHandleMotEnv[Index],
                 BLUETOOTH_GATT_FLAG_NONE);
 
@@ -1546,3 +1868,4 @@ void OpenBluetoothMotEnv(int Index)
     }
 
 }
+*/
